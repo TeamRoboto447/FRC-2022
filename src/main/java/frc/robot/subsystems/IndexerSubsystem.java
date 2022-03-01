@@ -82,11 +82,11 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   public void intakeBallSpeedOverride(double indexSpeed, double intakeSpeed) {
-    if(!isFull()) {
-      intakeRaw(intakeSpeed);
-      if(ballAtIntake()) {
+    if(/*!isFull()*/ true) {
+      // intakeRaw(intakeSpeed);
+      if(/*ballAtIntake()*/ true) {
         indexerRaw(indexSpeed);
-        this.turretSubsystem.feedShooterRaw(-0.4);
+        // this.turretSubsystem.feedShooterRaw(-0.4);
       } else {
         indexerRaw(0);
       }

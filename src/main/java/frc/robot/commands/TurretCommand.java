@@ -34,6 +34,7 @@ public class TurretCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
     if (RobotContainer.operator.getRawButton(OperatorMap.A)) {
       if (this.turretSubsystem.validTarget) {
         target();
@@ -45,19 +46,19 @@ public class TurretCommand extends CommandBase {
     }
 
     if (RobotContainer.operator.getRawButton(OperatorMap.RT)) {
-      this.turretSubsystem.enableShooterLogging(true);
+      // this.turretSubsystem.enableShooterLogging(true);
       shootAtDistance();
       runFeeder();
     } else if (RobotContainer.operator.getRawButton(OperatorMap.Y)) {
-      this.turretSubsystem.enableShooterLogging(true);
+      // this.turretSubsystem.enableShooterLogging(true);
       shootAtSpeed();
       runFeeder();
     } else if (RobotContainer.operator.getRawButton(OperatorMap.LB)) {
-      this.turretSubsystem.enableShooterLogging(false);
+      // this.turretSubsystem.enableShooterLogging(false);
       this.turretSubsystem.runShooterRaw(0);
       this.reverseFeeder();
     } else {
-      this.turretSubsystem.enableShooterLogging(false);
+      // this.turretSubsystem.enableShooterLogging(false);
       this.turretSubsystem.runShooterRaw(0);
       this.turretSubsystem.stopFeeder();
     }
@@ -91,6 +92,7 @@ public class TurretCommand extends CommandBase {
   private void shootAtDistance() {
     double dist = this.turretSubsystem.getDistance();
     double speed = this.turretSubsystem.getSpeedFromDist(dist);
+    speed = this.turretSubsystem.getManualSpeed();
     this.turretSubsystem.runShooterAtSpeed(speed);
   }
 
@@ -132,7 +134,7 @@ public class TurretCommand extends CommandBase {
   private void turnManual() {
     this.turretSubsystem.enableTargetting(true);
     double position = -Utilities.adjustForDeadzone(RobotContainer.operator.getRawAxis(OperatorMap.lJoyX), 0.025);
-    double angle = 180 * position;
+    double angle = 90 * position;
     this.turretSubsystem.turnToAngle(angle, 0.5);
   }
 

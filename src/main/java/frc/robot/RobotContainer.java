@@ -36,7 +36,7 @@ public class RobotContainer {
   public final ClimberSubsystem climberSubsystem = new ClimberSubsystem(driveSubsystem);
 
   public final RobotDriveCommand driveCommand = new RobotDriveCommand(driveSubsystem);
-  // public final TurretCommand turretCommand = new TurretCommand(turretSubsystem, driveSubsystem);
+  public final TurretCommand turretCommand = new TurretCommand(turretSubsystem, driveSubsystem);
   public final IntakeCommand intakeCommand = new IntakeCommand(indexerSubsystem);
   public final ClimbCommand climbCommand = new ClimbCommand(climberSubsystem);
 
@@ -120,7 +120,7 @@ public class RobotContainer {
   private void setDefaultCommands() {
 
     this.driveSubsystem.setDefaultCommand(this.driveCommand);
-    // this.turretSubsystem.setDefaultCommand(this.turretCommand);
+    this.turretSubsystem.setDefaultCommand(this.turretCommand);
     this.indexerSubsystem.setDefaultCommand(this.intakeCommand);
     this.climberSubsystem.setDefaultCommand(this.climbCommand);
 

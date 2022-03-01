@@ -14,6 +14,7 @@ package frc.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.net.PortForwarder;
 // import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -54,7 +55,7 @@ public class Robot extends TimedRobot {
     this.robotContainer = new RobotContainer();
     this.pneumaticHub = new PneumaticHub();
     this.pneumaticHub.enableCompressorDigital();
-
+    PortForwarder.add(5800, "photonvision.local", 5800);
 
     // this.camera0 = CameraServer.startAutomaticCapture(0);
     // this.camera0.setResolution(160, 120);

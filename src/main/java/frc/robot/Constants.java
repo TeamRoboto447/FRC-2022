@@ -73,7 +73,7 @@ public final class Constants {
             // Wheel diameter for calculating inches per rotation
             wheelDiameter = 6.0, wheelDiameterMeters = 0.1524, shooterWheelDiameter = 6;
 
-    public static final double turretToMoterRatio = 100.0;
+    public static final double turretToMoterRatio = 134.24;
 
     public static final double 
         drivekP = 0.1,
@@ -101,6 +101,8 @@ public final class Constants {
         shooterMarginOfError = 60,
         shooterDefaultSpeed = 0.65;
 
+    public static final double cameraHightMeters = 0.9779, targetHightMeters = 2.6035, cameraPitchDegrees = 27.4;
+
     public static final double distanceLineEqM = 4.168902116976957, distanceLineEqB = -4.08623511110209;
 
     // Turning PID info
@@ -113,7 +115,7 @@ public final class Constants {
         turretIZone = 10,
         turretSpinLimit = 90,
         turretMarginOfError = 2,
-        staticAimOffset = 6;
+        staticAimOffset = 0;
 
     public static final double encoderRes = 1;
 

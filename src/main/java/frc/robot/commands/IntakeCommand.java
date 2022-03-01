@@ -33,9 +33,9 @@ public class IntakeCommand extends CommandBase {
   @Override
   public void execute() {
 
-    if(RobotContainer.operator.getRawAxis(OperatorMap.lJoyY) > 0.5) {
+    if(RobotContainer.operator.getRawAxis(OperatorMap.lJoyY) < -0.5) {
       this.indexerSubsystem.lowerIntake();
-    } else if(RobotContainer.operator.getRawAxis(OperatorMap.lJoyY) < -0.5) {
+    } else if(RobotContainer.operator.getRawAxis(OperatorMap.lJoyY) > 0.5) {
       this.indexerSubsystem.raiseIntake();
     }
 
@@ -105,6 +105,6 @@ public class IntakeCommand extends CommandBase {
 
   private void feedShooter() {
     // if(this.turretSubsystem.shooterAtSpeed()) this.shooterSpunUp = true;
-    this.indexerSubsystem.indexerRaw(0.75);
+    this.indexerSubsystem.indexerRaw(-0.75);
   }
 }

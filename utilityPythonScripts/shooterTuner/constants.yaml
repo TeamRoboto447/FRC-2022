@@ -1,0 +1,53 @@
+RobotAddress: roboRIO-447-frc.local
+TransitionTime: 7
+
+ShooterButton: Y
+
+GraphEncoderColor:
+  - 0
+  - 0.5
+  - 0
+GraphSetpointColor:
+  - 1
+  - 0
+  - 0
+GraphVlineColor:
+  - 0
+  - 0
+  - 0
+
+NTSetShooterSpeed: /PID/shootTargetSpeed
+NTBypassShooterPID: /PID/bypassShooterPID
+NTTime: /pidTuningPVs/timeMS
+NTGetShooterEncoder: /pidTuningPVs/Shooter Speed
+NTShooterP: /PID/shootkP
+NTShooterI: /PID/shootkI
+NTShooterD: /PID/shootkD
+NTShooterFFm: /PID/shootkFFm
+NTShooterFFb: /PID/shootkFFb
+NTShooterTargetSpeed: /pidTuningPVs/shooterTargetSpeed
+
+FFTimePerSpeed: 1
+FFMinSpeed: 30
+FFMaxSpeed: 100
+FFStep: 5 
+FFSettleTime: 1
+
+FFTestSpeeds:
+  - 90
+  - 60
+  - 30
+FFTestTime: 3
+
+PIDOscillationP: 0.00045
+PIDOscillationSpeed: 0.345
+PIDRunTime: 10
+PIDCountDelta: 2
+PIDSettleTime: 2
+
+TestSpeeds:
+  - 100
+  - 50
+  - 70
+  - 100
+TestTime: 5
