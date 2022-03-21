@@ -8,16 +8,17 @@
 package frc.robot.autocommands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 
-public class IntakeBalls extends CommandBase {
-  private int ballCount = 0;
-  private boolean wasLookingAtBall = false;
+public class LowerDump extends CommandBase {
+  private final TurretSubsystem turretSubsystem;
   private final IndexerSubsystem indexerSubsystem;
-  private final int expectedBalls;
-  public IntakeBalls(IndexerSubsystem iSubsystem, int expectedBalls) {
+  public LowerDump(TurretSubsystem tSubsystem, IndexerSubsystem iSubsystem) {
+    this.turretSubsystem = tSubsystem;
     this.indexerSubsystem = iSubsystem;
-    this.expectedBalls = expectedBalls;
+    addRequirements(tSubsystem);
     addRequirements(iSubsystem);
   }
 
@@ -29,34 +30,20 @@ public class IntakeBalls extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.indexerSubsystem.lowerIntake();
-    this.indexerSubsystem.intakeBallSpeedOverride(1, -0.8);
-    
-    // if(!this.wasLookingAtBall) {
-    //   this.ballCount++;
-    //   this.wasLookingAtBall = true;
-    //   // System.out.println("Ball In, ball count = " + this.ballCount);
-    // } else if(this.wasLookingAtBall) {
-    //   // System.out.println("Ball Into Index");
-    //   this.wasLookingAtBall = false;
-    // }
-
+    this.turretSubsystem.runShooterRaw(Constants.lowerHubSpeed);
+    this.turretSubsystem.feedShooterRaw(1);
+    this.indexerSubsystem.indexerRaw(1);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // System.out.println("Ended intake command");
-    this.indexerSubsystem.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    boolean finished = false; //this.indexerSubsystem.isFull() || this.ballCount >= this.expectedBalls;
-    // if (finished){
-    //   System.out.println("IntakeBalls finished");
-    // }
+    boolean finished = false; 
     return finished;
   }
 }

@@ -2,30 +2,36 @@ from networktables import NetworkTables as NT
 from time import sleep
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 
 def main():
-    NT.initialize(server="10.4.47.2")
+    # NT.initialize(server="10.4.47.2")
+    NT.initialize(server="172.22.11.2")
     print("Please wait while the NetworkTable connects")
     while not NT.isConnected():
         sleep(0.1)
 
     table = NT.getTable('pidTuningPVs')
-    distance = table.getEntry('distanceFromTarget')
+    distance = table.getEntry('distanceToTarget')
+    speed = NT.getTable("PID").getEntry("shootTargetSpeed")
 
     iteration = 0
     measurements = [[0, 0, 0], [0, 0, 0]]
     while(iteration <= 2):
-        speed = float(input("What speed are you shooting?\n> "))
+        print("Waiting for measurement...")
+        os.system("pause")
         if not NT.isConnected():
             print("NT Server disconnected... trying to reconnect")
             NT.initialize(server="10.4.47.2")
             while not NT.isConnected():
                 sleep(0.1)
+        speedMeasurement = speed.getDouble(0)
+        print(speedMeasurement)
         print("Logging measurements..")
-        measurements[0][iteration] = speed
+        measurements[0][iteration] = speedMeasurement
         averageX = 0
-        sampleSize = 500
+        sampleSize = 100
         for i in range(sampleSize):
             averageX += distance.getDouble(0)
             sleep(0.02)
@@ -43,6 +49,7 @@ def main():
     b = estimateCoef(x, y)
     plotLine(x, y, b)
     print(f"Speed slope = ({b[1]} * X value) + {b[0]}")
+    print(f"Variable names and their values:\nspeedkM = {b[1]}\nspeedkB = {b[0]}")
 
 
 def estimateCoef(x, y):

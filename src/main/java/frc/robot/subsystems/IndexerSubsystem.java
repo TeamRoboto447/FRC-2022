@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -47,7 +46,7 @@ public class IndexerSubsystem extends SubsystemBase {
     this.turretSubsystem = turretSubsystem;
     this.indexingMotor = new TalonSRX(Constants.indexerTalonSRX);
     this.intakeMotor = new TalonSRX(Constants.intakeTalonSRX);
-    this.intakeExtension = new DoubleSolenoid(PneumaticsModuleType.REVPH, Constants.intakeOut, Constants.intakeIn);
+    this.intakeExtension = new DoubleSolenoid(Constants.pneumaticsType, Constants.intakeOut, Constants.intakeIn);
     indexerFirstPos = new DigitalInput(Constants.indexerFirstPos);
     fullIndexerSensor = new DigitalInput(Constants.fullIndexerSensor);
     this.setupNetworkTables();
@@ -82,18 +81,21 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   public void intakeBallSpeedOverride(double indexSpeed, double intakeSpeed) {
+    System.out.println(indexSpeed);
     if(/*!isFull()*/ true) {
-      // intakeRaw(intakeSpeed);
+      intakeRaw(intakeSpeed);
       if(/*ballAtIntake()*/ true) {
         indexerRaw(indexSpeed);
-        // this.turretSubsystem.feedShooterRaw(-0.4);
-      } else {
-        indexerRaw(0);
-      }
-    } else {
-      indexerRaw(0);
-      intakeRaw(0);
-    }
+        this.turretSubsystem.feedShooterRaw(-0.4);
+      } 
+      // else {
+      //   indexerRaw(0);
+      // }
+    } 
+    // else {
+    //   indexerRaw(0);
+    //   intakeRaw(0);
+    // }
   }
 
   private void updateShotInProgress(){
@@ -109,7 +111,7 @@ public class IndexerSubsystem extends SubsystemBase {
   }
   
   public void indexerRaw(double speed) {
-    this.indexingMotor.set(TalonSRXControlMode.PercentOutput, speed);
+    this.indexingMotor.set(TalonSRXControlMode.PercentOutput, -speed);
   }
 
   public void lowerIntake() {

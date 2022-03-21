@@ -10,14 +10,10 @@ package frc.robot.autocommands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IndexerSubsystem;
 
-public class IntakeBalls extends CommandBase {
-  private int ballCount = 0;
-  private boolean wasLookingAtBall = false;
+public class RaiseIntake extends CommandBase {
   private final IndexerSubsystem indexerSubsystem;
-  private final int expectedBalls;
-  public IntakeBalls(IndexerSubsystem iSubsystem, int expectedBalls) {
+  public RaiseIntake(IndexerSubsystem iSubsystem) {
     this.indexerSubsystem = iSubsystem;
-    this.expectedBalls = expectedBalls;
     addRequirements(iSubsystem);
   }
 
@@ -29,8 +25,7 @@ public class IntakeBalls extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.indexerSubsystem.lowerIntake();
-    this.indexerSubsystem.intakeBallSpeedOverride(1, -0.8);
+    this.indexerSubsystem.raiseIntake();
     
     // if(!this.wasLookingAtBall) {
     //   this.ballCount++;
@@ -46,14 +41,12 @@ public class IntakeBalls extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // System.out.println("Ended intake command");
-    this.indexerSubsystem.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    boolean finished = false; //this.indexerSubsystem.isFull() || this.ballCount >= this.expectedBalls;
+    boolean finished = true; //this.indexerSubsystem.isFull() || this.ballCount >= this.expectedBalls;
     // if (finished){
     //   System.out.println("IntakeBalls finished");
     // }

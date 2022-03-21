@@ -8,16 +8,28 @@
 package frc.robot;
 
 import frc.robot.subsystems.*;
+import frc.robot.autocommands.AimAndDump;
+import frc.robot.autocommands.AimAndShoot;
+import frc.robot.autocommands.TurretRotate;
+import frc.robot.autocommands.DriveToPosition;
+import frc.robot.autocommands.IntakeBalls;
+import frc.robot.autocommands.InvertDrive;
+import frc.robot.autocommands.LowerDump;
+import frc.robot.autocommands.RaiseIntake;
 import frc.robot.commands.*;
 // import frc.robot.autocommands.*;
+
+import com.ctre.phoenix.Util;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 // import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 // import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -38,12 +50,12 @@ public class RobotContainer {
   public final RobotDriveCommand driveCommand = new RobotDriveCommand(driveSubsystem);
   public final TurretCommand turretCommand = new TurretCommand(turretSubsystem, driveSubsystem);
   public final IntakeCommand intakeCommand = new IntakeCommand(indexerSubsystem);
-  public final ClimbCommand climbCommand = new ClimbCommand(climberSubsystem);
+  public final ClimbCommand climbCommand = new ClimbCommand(climberSubsystem, driveSubsystem);
 
   public final SendableChooser<Command> autonomousSelector;
 
-  public static Joystick driverRight = new Joystick(0);
-  public static Joystick driverLeft = new Joystick(1);
+  public static Joystick driverLeft = new Joystick(0);
+  public static Joystick driverRight = new Joystick(1);
   public static Joystick operator = new Joystick(2);
 
   /**
@@ -71,47 +83,42 @@ public class RobotContainer {
   private void configureButtonBindings() {
   }
 
-  // private final boolean scanLeft = false;
+  private final boolean scanLeft = false;
   // private final boolean scanRight = true;
 
-  // SequentialCommandGroup threeBallAuto = new SequentialCommandGroup(
-  //     new AimAndDump(this.turretSubsystem, this.indexerSubsystem, scanLeft, 0.5, 6, 3),
-  //     new DriveToPosition(this.driveSubsystem, "high", Utilities.feetToEncoder(2.5), 0.2, 1)
-  //   );
+  SequentialCommandGroup singleBall = new SequentialCommandGroup(
+      new RaiseIntake(this.indexerSubsystem),
+      new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(65), 0.65, 1),
+      new AimAndShoot(this.turretSubsystem, this.indexerSubsystem, this.driveSubsystem, scanLeft, 0.5, 5, 1));
 
-  // SequentialCommandGroup threeBallAutoManualAim = new SequentialCommandGroup(
-  //     new StaticDump(this.turretSubsystem, this.indexerSubsystem, 10.11, 0, 4, 3),
-  //     new DriveToPosition(this.driveSubsystem, "high", Utilities.feetToEncoder(2.5), 0.2, 1)
-  //     );
+  SequentialCommandGroup twoBall = new SequentialCommandGroup(
+      new RaiseIntake(this.indexerSubsystem),
+      new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(65), 0.65, 1),
+      new AimAndShoot(this.turretSubsystem, this.indexerSubsystem, this.driveSubsystem, scanLeft, 0.5, 5, 1),
+      new ParallelRaceGroup(
+          new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(30), 0.5, 1),
+          new IntakeBalls(this.indexerSubsystem, 1)),
+      new AimAndShoot(this.turretSubsystem, this.indexerSubsystem, this.driveSubsystem, scanLeft, 0.5, 5, 1));
 
-  // SequentialCommandGroup threeBallAutoPush = new SequentialCommandGroup(
-  //     new AimAndDump(this.turretSubsystem, this.indexerSubsystem, scanLeft, 0.5, 6, 3),
-  //     new DriveToPosition(this.driveSubsystem, "low", Utilities.feetToEncoder(-2), 0.4, 1),
-  //     new DriveToPosition(this.driveSubsystem, "high", Utilities.feetToEncoder(5), 0.2, 1)
-  //     );
-
-  // SequentialCommandGroup sixBallAuto = new SequentialCommandGroup(
-  //     new AimAndDump(this.turretSubsystem, this.indexerSubsystem, scanLeft, 0.4, 4, 3),
-  //     new ParallelRaceGroup(
-  //       new KeepShooterRevved(this.turretSubsystem),
-  //       new IntakeBalls(this.indexerSubsystem, 3),
-  //       new DriveToPosition(this.driveSubsystem, "high", Utilities.feetToEncoder(16), 0.6, 0.8)
-  //     ),
-  //     new AimAndDump(this.turretSubsystem, this.indexerSubsystem, scanLeft, 0.3, 10, 3));
-
-  // SequentialCommandGroup fiveBallAuto = new SequentialCommandGroup(
-  //     new AimAndDump(this.turretSubsystem, this.indexerSubsystem, scanLeft, 0.4, 4, 3),
-  //     new ParallelRaceGroup(new KeepShooterRevved(this.turretSubsystem), new IntakeBalls(this.indexerSubsystem, 2),
-  //         new DriveToPosition(this.driveSubsystem, "high", Utilities.feetToEncoder(4), 0.6, 1)),
-  //     // new ParallelRaceGroup(new KeepShooterRevved(this.turretSubsystem), new IntakeBalls(this.indexerSubsystem, 2),
-  //     //     new DriveToPosition(this.driveSubsystem, "high", Utilities.feetToEncoder(-3), 0.6, 1)),
-  //     new AimAndDump(this.turretSubsystem, this.indexerSubsystem, scanLeft, 0.3, 10, 2));
+  SequentialCommandGroup twoLower = new SequentialCommandGroup(
+    new ParallelRaceGroup(
+      new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(95), 0.65, 1),
+      new IntakeBalls(this.indexerSubsystem, 1)
+    ),
+    new InvertDrive(this.driveSubsystem),
+    new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(95), 0.65, 1),
+    new TurretRotate(this.turretSubsystem, 0, 5),
+    new LowerDump(this.turretSubsystem, this.indexerSubsystem)
+  );
 
   private void addAutonomousCommands() {
-    // this.autonomousSelector.setDefaultOption("3 Ball Auto", this.threeBallAuto);
-    // // this.autonomousSelector.addOption("Three Ball Auto (Manual Target)",
-    // // this.threeBallAutoManualAim);
-    // this.autonomousSelector.addOption("3 Ball Auto With Assist", this.threeBallAutoPush);
+    this.autonomousSelector.addOption("1 Ball Upper", this.singleBall);
+    this.autonomousSelector.setDefaultOption("2 Ball Upper", this.twoBall);
+    this.autonomousSelector.addOption("2 Ball Lower", this.twoLower);
+    // this.autonomousSelector.addOption("Three Ball Auto (Manual Target)",
+    // this.threeBallAutoManualAim);
+    // this.autonomousSelector.addOption("3 Ball Auto With Assist",
+    // this.threeBallAutoPush);
     // this.autonomousSelector.addOption("3+ Ball Auto", this.sixBallAuto);
     // this.autonomousSelector.addOption("5 Ball Auto", this.fiveBallAuto);
     Shuffleboard.getTab("Autonomous").add(this.autonomousSelector);

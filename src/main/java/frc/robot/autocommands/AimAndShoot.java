@@ -11,11 +11,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.RobotDriveSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 
 public class AimAndShoot extends CommandBase {
   private final TurretSubsystem turretSubsystem;
   private final IndexerSubsystem indexerSubsystem;
+  private final RobotDriveSubsystem driveSubsystem;
   private final Timer countDown, overallTimer, distanceTimer;
   private final double maxRunTime;
   private final int ballsToShoot;
@@ -23,11 +25,13 @@ public class AimAndShoot extends CommandBase {
   private final double scanSpeed;
   private int ballsShot = 0;
   private boolean wasLookingAtBall = false;
+  private boolean shooting = false;
 
-  public AimAndShoot(TurretSubsystem tSubsystem, IndexerSubsystem iSubsystem, boolean scanRight, double scanSpeed,
+  public AimAndShoot(TurretSubsystem tSubsystem, IndexerSubsystem iSubsystem, RobotDriveSubsystem dSubsystem, boolean scanRight, double scanSpeed,
       double maxTime, int ballsToShoot) {
     this.turretSubsystem = tSubsystem;
     this.indexerSubsystem = iSubsystem;
+    this.driveSubsystem = dSubsystem;
     this.scanAngle = scanRight ? -45 : 45;
     this.scanSpeed = scanSpeed;
 
@@ -53,11 +57,13 @@ public class AimAndShoot extends CommandBase {
     this.countDown.reset();
     this.overallTimer.reset();
     this.overallTimer.start();
+    this.indexerSubsystem.raiseIntake();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    this.driveSubsystem.stop();
     this.turretSubsystem.enableTargetting(true);
     if (!this.turretSubsystem.validTarget) {
       if (this.turretSubsystem.getTurretPos() < -40) {
@@ -69,7 +75,8 @@ public class AimAndShoot extends CommandBase {
       spinUp();
     } else {
       this.turretSubsystem.turnToTarget(0.5);
-      if (this.turretSubsystem.onTarget()) {
+      if (this.turretSubsystem.onTarget() || this.shooting) {
+        this.shooting = true;
         shoot();
       } else {
         spinUp();
@@ -93,10 +100,10 @@ public class AimAndShoot extends CommandBase {
     double currentDistance = this.turretSubsystem.getDistance();
     double shooterSpeed = this.turretSubsystem.getSpeedFromDist(currentDistance);
     this.turretSubsystem.runShooterAtSpeed(shooterSpeed);
-    this.indexerSubsystem.intakeRaw(-Constants.intakeSpeed);
+    // this.indexerSubsystem.intakeRaw(-Constants.intakeSpeed);
     this.distanceTimer.start();
-    if (this.turretSubsystem.shooterAtSpeed()) {
-      if (this.distanceTimer.get() > 0.5) {
+    if (true) { //this.turretSubsystem.shooterAtSpeed()
+      if (this.distanceTimer.get() > 1.5) {
         this.turretSubsystem.lockDistance();
         this.turretSubsystem.feedShooter();
         this.indexerSubsystem.indexerRaw(0.75);

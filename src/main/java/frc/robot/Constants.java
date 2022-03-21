@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -43,14 +44,23 @@ public final class Constants {
             shooterPreloadTalonSRX = 11; // Shooter Preloader TalonSRX, CAN ID 11
 
 
+    public static final PneumaticsModuleType pneumaticsType = PneumaticsModuleType.CTREPCM;
+    
     // PCM Channels on board 1 (pneumatics)
     public static final int pneumaticsController = 1, // Pneumatics Board CAN ID 1
             transmissionLow = 0, // Drive transmission Low, PCM channel 0.
             transmissionHigh = 1, // Drive transmission Low, PCM channel 1.
             climberOut = 2, // Climber out, PCM channel 2.
             climberIn = 3, // Climber in, PCM channel 3.
-            intakeOut = 4, // Intake extension, PCM channel 4.
+            intakeOut = 7, // Intake extension, PCM channel 4.
             intakeIn = 5;  // Intake retraction, PCM channel 5.
+
+    // Climb Constants
+    public static final double 
+        autoClimStepDelay = 0.5, //in seconds
+        autoClimbTiltMargin = 3,
+        lowerWindLimit = -8,
+        upperWindLimit = 220;
 
     public static final int indexerFirstPos = 0, // Indexing sensor sensor first position, DIO channel 0.
             fullIndexerSensor = 1; // Full Indexer Sensor , DIO channel 2.
@@ -59,7 +69,7 @@ public final class Constants {
     public static final int PowerDistributionHub = 1; // Power Distribution Hub, CAN ID 1
 
     //set speeds for intaking balls
-    public static final double intakeSpeed = 0.8, indexingSpeed = 0.8;
+    public static final double intakeSpeed = 1, indexingSpeed = 0.8;
 
     //set how long after a ball is shot it will take for vision to reenable.
     public static final double shotInProgressTime = 0.1;
@@ -73,7 +83,7 @@ public final class Constants {
             // Wheel diameter for calculating inches per rotation
             wheelDiameter = 6.0, wheelDiameterMeters = 0.1524, shooterWheelDiameter = 6;
 
-    public static final double turretToMoterRatio = 134.24;
+    public static final double turretToMoterRatio = 109.953; //134.24;
 
     public static final double 
         drivekP = 0.1,
@@ -93,21 +103,23 @@ public final class Constants {
         shooterkFFb = -1.372668e-02, 
         shooterIZone = 100,
         shooterSZone = 100,
-        speedkM = 0.011525307660967559,
-        speedkB = 0.4586392030161885,
+
+        speedkM = 0.018781270397872946,
+        speedkB = 0.425,
         shooterPidIntegralResetTime = 2,
         distanceFromInnerToOuterPort = 29.5 / 12,
         maxInnerPortAjustmentAngle = Math.PI / 4,
         shooterMarginOfError = 60,
-        shooterDefaultSpeed = 0.65;
+        shooterDefaultSpeed = 0.65,
+        lowerHubSpeed = 0.28;
 
-    public static final double cameraHightMeters = 0.9779, targetHightMeters = 2.6035, cameraPitchDegrees = 27.4;
+    public static final double cameraHightMeters = 0.9779, targetHightMeters = 2.6035, cameraPitchDegrees = 17.3;
 
     public static final double distanceLineEqM = 4.168902116976957, distanceLineEqB = -4.08623511110209;
 
     // Turning PID info
     public static final double
-        turretkP = 0.015,
+        turretkP = 0.01,
         turretkI = 0.0,
         turretkD = 0.0,
         turretFFm = 0,

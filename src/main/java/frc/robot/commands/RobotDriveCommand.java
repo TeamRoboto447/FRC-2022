@@ -40,12 +40,12 @@ public class RobotDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.driveSubsystem.tankDrive(RobotContainer.driverLeft.getY(), RobotContainer.driverRight.getY());
+    this.driveSubsystem.tankDrive(RobotContainer.driverRight.getY(), RobotContainer.driverLeft.getY());
 
-    this.invertDrive.runToggle(RobotContainer.driverRight.getRawButton(1)); // Run toggle
+    this.invertDrive.runToggle(RobotContainer.driverLeft.getRawButton(3)); // Run toggle
     this.driveSubsystem.setInvertedDrive(this.invertDrive.getState()); // Set inverted based on toggle status
   
-    this.transmissionToggle.runToggle(RobotContainer.driverLeft.getRawButton(1));
+    this.transmissionToggle.runToggle(RobotContainer.driverRight.getRawButton(1));
     
     if(this.transmissionToggle.getState()) {
         this.driveSubsystem.setCurrentGear("high");

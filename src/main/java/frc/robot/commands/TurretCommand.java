@@ -9,7 +9,7 @@ package frc.robot.commands;
 
 // import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Utilities;
 import frc.robot.controlmaps.OperatorMap;
@@ -57,42 +57,44 @@ public class TurretCommand extends CommandBase {
       // this.turretSubsystem.enableShooterLogging(false);
       this.turretSubsystem.runShooterRaw(0);
       this.reverseFeeder();
+    } else if(RobotContainer.operator.getRawButton(OperatorMap.B)) {
+      this.turretSubsystem.runShooterRaw(Constants.lowerHubSpeed);
+      runFeeder();
     } else {
       // this.turretSubsystem.enableShooterLogging(false);
       this.turretSubsystem.runShooterRaw(0);
       this.turretSubsystem.stopFeeder();
     }
 
-    /*if (RobotContainer.operator.getRawButton(OperatorMap.LT)) {
-      lockDist();
+    if (RobotContainer.operator.getRawButton(OperatorMap.RT) || RobotContainer.operator.getRawButton(OperatorMap.Y)) {
+      // lockDist();
       lockTurret();
     } else {
-      unlockDist();
+      // unlockDist();
       unlockTurret();
-    }*/
+    }
 
   }
 
-  // private void lockDist() {
-  //   this.turretSubsystem.lockDistance();
-  // }
+  private void lockDist() {
+    this.turretSubsystem.lockDistance();
+  }
 
-  // private void unlockDist() {
-  //   this.turretSubsystem.unlockDistance();
-  // }
+  private void unlockDist() {
+    this.turretSubsystem.unlockDistance();
+  }
 
-  // private void lockTurret() {
-  //   this.turretSubsystem.lockTurret();
-  // }
+  private void lockTurret() {
+    this.turretSubsystem.lockTurret();
+  }
 
-  // private void unlockTurret() {
-  //   this.turretSubsystem.unlockTurret();
-  // }
+  private void unlockTurret() {
+    this.turretSubsystem.unlockTurret();
+  }
 
   private void shootAtDistance() {
     double dist = this.turretSubsystem.getDistance();
     double speed = this.turretSubsystem.getSpeedFromDist(dist);
-    speed = this.turretSubsystem.getManualSpeed();
     this.turretSubsystem.runShooterAtSpeed(speed);
   }
 
@@ -102,7 +104,7 @@ public class TurretCommand extends CommandBase {
   }
 
   private void runFeeder() {
-    if (/*this.turretSubsystem.shooterAtSpeed() &&*/ RobotContainer.operator.getRawButton(OperatorMap.LT)) {
+    if (RobotContainer.operator.getRawButton(OperatorMap.LT) || RobotContainer.operator.getRawButton(OperatorMap.B)) {
       this.turretSubsystem.feedShooter();
     } else {
       this.turretSubsystem.stopFeeder();
@@ -110,7 +112,7 @@ public class TurretCommand extends CommandBase {
   }
 
   private void reverseFeeder() {
-    this.turretSubsystem.feedShooterRaw(1);
+    this.turretSubsystem.feedShooterRaw(-1);
   }
 
   // Called once the command ends or is interrupted.

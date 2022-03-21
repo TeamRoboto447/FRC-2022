@@ -10,15 +10,16 @@ package frc.robot.subsystems;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class BlingSubsystem extends SubsystemBase {
   private NetworkTable bling;
-  private NetworkTableEntry blingSelect;
+  private NetworkTableEntry chassisSelect;
   private NetworkTableInstance table;
-  private SendableChooser<String> blingSelector;
+  private SendableChooser<String> chassisSelector;
   private boolean ignoreSelector = false;
 
   public BlingSubsystem() {
@@ -28,27 +29,27 @@ public class BlingSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     if (!this.ignoreSelector) {
-      this.blingSelect.setString(this.blingSelector.getSelected());
+      this.chassisSelect.setString(this.chassisSelector.getSelected());
     }
   }
 
   private void setupNetworkTables() {
     this.table = NetworkTableInstance.getDefault();
     this.bling = this.table.getTable("Bling");
-    this.blingSelect = this.bling.getEntry("blingSelect");
-    this.blingSelector = new SendableChooser<>();
+    this.chassisSelect = this.bling.getEntry("blingSelect");
+    this.chassisSelector = new SendableChooser<>();
 
-    this.blingSelector.setDefaultOption("Fancy Idle Mode", "fancyidle");
-    this.blingSelector.addOption("Red vs Blue", "fight");
-    this.blingSelector.addOption("Idle Mode", "idle");
-    this.blingSelector.addOption("Bling Test", "grade");
-    this.blingSelector.addOption("Disable Bling", "off");
-
-    Shuffleboard.getTab("Bling").add(this.blingSelector);
+    this.chassisSelector.addOption("Fancy Idle Mode", "fancyidle");
+    this.chassisSelector.addOption("Red vs Blue", "fight");
+    this.chassisSelector.setDefaultOption("Idle Mode", "idle");
+    this.chassisSelector.addOption("Bling Test", "grade");
+    this.chassisSelector.addOption("Disable Bling", "off");
+    Shuffleboard.getTab("Bling").add(this.chassisSelector);
+    
   }
 
   public void setBling(String blingSel) {
-    this.blingSelect.setString(blingSel);
+    this.chassisSelect.setString(blingSel);
   }
 
   public void setSelectorIgnore(boolean ignore) {

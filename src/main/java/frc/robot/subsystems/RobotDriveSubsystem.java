@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -63,24 +64,28 @@ public class RobotDriveSubsystem extends SubsystemBase {
   private boolean driveInverted;
 
   private Ramp rightRamp, leftRamp;
+
   /**
    * Creates a new DriveSubsystem.
    */
   public RobotDriveSubsystem() {
     this.leftDriveA = new CANSparkMax(Constants.leftDrive, MotorType.kBrushless);
     this.leftDriveB = new CANSparkMax(Constants.leftDriveB, MotorType.kBrushless);
-    
+
     this.rightDriveA = new CANSparkMax(Constants.rightDrive, MotorType.kBrushless);
     this.rightDriveB = new CANSparkMax(Constants.rightDriveB, MotorType.kBrushless);
 
-    this.rightRamp = new Ramp(Constants.driveTrainRampTimeToMax, Constants.driveTrainRampMaxTimeDelta, this.getCurrentGear() == "high");
-    this.leftRamp = new Ramp(Constants.driveTrainRampTimeToMax, Constants.driveTrainRampMaxTimeDelta, this.getCurrentGear() == "high");
+    this.rightRamp = new Ramp(Constants.driveTrainRampTimeToMax, Constants.driveTrainRampMaxTimeDelta,
+        this.getCurrentGear() == "high");
+    this.leftRamp = new Ramp(Constants.driveTrainRampTimeToMax, Constants.driveTrainRampMaxTimeDelta,
+        this.getCurrentGear() == "high");
 
     setInvertedDrive(false);
 
     setMotorIdleMode(IdleMode.kCoast);
 
-    this.transmission = new DoubleSolenoid(PneumaticsModuleType.REVPH, Constants.transmissionHigh, Constants.transmissionLow);
+    this.transmission = new DoubleSolenoid(Constants.pneumaticsType, Constants.transmissionHigh,
+        Constants.transmissionLow);
 
     this.m_leftMotors = new MotorControllerGroup(leftDriveA, leftDriveB);
     this.m_rightMotors = new MotorControllerGroup(rightDriveA, rightDriveB);
@@ -92,16 +97,18 @@ public class RobotDriveSubsystem extends SubsystemBase {
     this.navX = new AHRS();
 
     resetEncoders();
-    // this.m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+    // this.m_odometry = new
+    // DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     // this.deployPath = Filesystem.getDeployDirectory().toPath();
-    // File odometryLogging = new File(deployPath.resolve("csv/Odometry.csv").toString());
+    // File odometryLogging = new
+    // File(deployPath.resolve("csv/Odometry.csv").toString());
     // try {
-    //   this.odometryWriter = new CSVWriter(new FileWriter(odometryLogging));
-    //   this.odometryWriterActive = true;
+    // this.odometryWriter = new CSVWriter(new FileWriter(odometryLogging));
+    // this.odometryWriterActive = true;
     // } catch (IOException e) {
-    //   System.err.println("Failed to open odometryWriter because:");
-    //   System.err.println(e.toString());
-    //   this.odometryWriterActive = false;
+    // System.err.println("Failed to open odometryWriter because:");
+    // System.err.println(e.toString());
+    // this.odometryWriterActive = false;
     // }
 
     this.kinematics = new DifferentialDriveKinematics(Constants.kTrackWidthMeters);
@@ -114,47 +121,51 @@ public class RobotDriveSubsystem extends SubsystemBase {
   }
 
   // public void closeCSVs() {
-  //   if (this.odometryWriterActive) {
-  //     try {
-  //       this.odometryWriter.close();
-  //     } catch (IOException e) {
+  // if (this.odometryWriterActive) {
+  // try {
+  // this.odometryWriter.close();
+  // } catch (IOException e) {
 
-  //     }
-  //   }
-  //   this.odometryWriterActive = false;
+  // }
+  // }
+  // this.odometryWriterActive = false;
   // }
 
   @Override
   public void periodic() {
 
-    // double leftOutputRotations = Utilities.driveshaftInputToOutput(this.m_leftEncoder.getPosition(),
-    //     this.getCurrentGear());
+    // double leftOutputRotations =
+    // Utilities.driveshaftInputToOutput(this.m_leftEncoder.getPosition(),
+    // this.getCurrentGear());
     // double leftOutputMeters = Utilities.rotationsToMeter(leftOutputRotations);
 
-    // double rightOutputRotations = Utilities.driveshaftInputToOutput(this.m_rightEncoder.getPosition(),
-    //     this.getCurrentGear());
+    // double rightOutputRotations =
+    // Utilities.driveshaftInputToOutput(this.m_rightEncoder.getPosition(),
+    // this.getCurrentGear());
     // double rightOutputMeters = Utilities.rotationsToMeter(rightOutputRotations);
 
-    // this.m_odometry.update(Rotation2d.fromDegrees(getHeading()), leftOutputMeters, rightOutputMeters);
+    // this.m_odometry.update(Rotation2d.fromDegrees(getHeading()),
+    // leftOutputMeters, rightOutputMeters);
 
-    // String recordsString = String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", getPose().getTranslation().getX(), // PoseX
-    //     getPose().getTranslation().getY(), // PoseY
-    //     getHeading(), // PoseHeading
-    //     getWheelSpeeds().leftMetersPerSecond, // Left Wheel Speed (m/s)
-    //     getWheelSpeeds().rightMetersPerSecond, // Right Wheel Speed (m/s)
-    //     this.leftOutputVoltage, // Left Voltage
-    //     this.rightOutputVoltage, // Right Voltage
-    //     this.leftSetpoint, // Left Setpoint (m/s)
-    //     this.rightSetpoint, // Right Setpoint (m/s)
-    //     System.currentTimeMillis() - this.startingTime);
+    // String recordsString = String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+    // getPose().getTranslation().getX(), // PoseX
+    // getPose().getTranslation().getY(), // PoseY
+    // getHeading(), // PoseHeading
+    // getWheelSpeeds().leftMetersPerSecond, // Left Wheel Speed (m/s)
+    // getWheelSpeeds().rightMetersPerSecond, // Right Wheel Speed (m/s)
+    // this.leftOutputVoltage, // Left Voltage
+    // this.rightOutputVoltage, // Right Voltage
+    // this.leftSetpoint, // Left Setpoint (m/s)
+    // this.rightSetpoint, // Right Setpoint (m/s)
+    // System.currentTimeMillis() - this.startingTime);
 
     // String[] records = recordsString.split(",");
 
     // if (this.odometryWriterActive && this.loggingEnabled) {
-    //   this.odometryWriter.writeNext(records);
+    // this.odometryWriter.writeNext(records);
     // }
 
-    switch(this.getCurrentGear()) {
+    switch (this.getCurrentGear()) {
       case "low":
         this.transmission.set(DoubleSolenoid.Value.kReverse);
         break;
@@ -193,13 +204,13 @@ public class RobotDriveSubsystem extends SubsystemBase {
     ChassisSpeeds speeds = kinematics.toChassisSpeeds(this.getWheelSpeeds());
     return speeds;
   }
-  
+
   public double[] getFieldRelativeSpeed() {
     ChassisSpeeds chassisSpeeds = this.getChassisSpeed();
     double angle = this.getHeading();
     double Vx = Math.sin(Math.toRadians(angle)) * chassisSpeeds.vxMetersPerSecond;
     double Vy = Math.cos(Math.toRadians(angle)) * chassisSpeeds.vxMetersPerSecond;
-    double[] speeds = new double[]{Vx, Vy};
+    double[] speeds = new double[] { Vx, Vy };
     return speeds;
   }
 
@@ -305,6 +316,10 @@ public class RobotDriveSubsystem extends SubsystemBase {
     return this.navX.getRoll();
   }
 
+  public double getAltitude() {
+    return this.navX.getAltitude();
+  }
+
   /**
    * Returns the turn rate of the robot.
    *
@@ -312,6 +327,10 @@ public class RobotDriveSubsystem extends SubsystemBase {
    */
   public double getTurnRate() {
     return this.navX.getRate() * (Constants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  public double mapSpeed(double speed) {
+    return ((Math.pow(speed, 3) + speed) / 2);
   }
 
   public void tankDrive(double leftSpeed, double rightSpeed) {
@@ -325,13 +344,14 @@ public class RobotDriveSubsystem extends SubsystemBase {
   private void setRelativeDrive(double leftSpeed, double rightSpeed) {
     this.leftRamp.setEnable(this.getCurrentGear() == "high");
     this.rightRamp.setEnable(this.getCurrentGear() == "high");
-
     leftSpeed = this.leftRamp.run(leftSpeed);
     rightSpeed = this.rightRamp.run(rightSpeed);
+
+    SmartDashboard.getEntry("Inverted Drive").setBoolean(this.driveInverted);
     if (this.driveInverted) {
       this.m_drive.tankDrive(leftSpeed, rightSpeed);
     } else {
-      this.m_drive.tankDrive(-rightSpeed, -leftSpeed);
+      this.m_drive.tankDrive(rightSpeed, leftSpeed);
     }
   }
 
@@ -356,7 +376,7 @@ public class RobotDriveSubsystem extends SubsystemBase {
   public String getCurrentGear() {
     String output;
 
-    switch(this.currentGear) {
+    switch (this.currentGear) {
       case "low":
         output = "low";
         break;

@@ -7,16 +7,19 @@
 
 package frc.robot;
 
-// import edu.wpi.first.cscore.UsbCamera;
-// import edu.wpi.first.cscore.VideoSink;
-// import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
-// import edu.wpi.first.cameraserver.CameraServer;
+import com.revrobotics.CANSparkMax.IdleMode;
+
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSink;
+import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.net.PortForwarder;
 // import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -34,8 +37,8 @@ public class Robot extends TimedRobot {
   private Command autonomousCommand;
 
   private RobotContainer robotContainer;
-  // private UsbCamera camera0;
-  // private VideoSink camServer;
+  private UsbCamera camera0;
+  private VideoSink camServer;
 
   private NetworkTable pidTuningPVs;
   private NetworkTableInstance table;
@@ -53,15 +56,18 @@ public class Robot extends TimedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     this.robotContainer = new RobotContainer();
-    this.pneumaticHub = new PneumaticHub();
-    this.pneumaticHub.enableCompressorDigital();
     PortForwarder.add(5800, "photonvision.local", 5800);
 
-    // this.camera0 = CameraServer.startAutomaticCapture(0);
-    // this.camera0.setResolution(160, 120);
-    // this.camera0.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    if(Constants.pneumaticsType == PneumaticsModuleType.REVPH) {
+      this.pneumaticHub = new PneumaticHub();
+      this.pneumaticHub.enableCompressorDigital();
+    }
 
-    // this.camServer = CameraServer.getServer();
+    this.camera0 = CameraServer.startAutomaticCapture(0);
+    this.camera0.setResolution(160, 120);
+    this.camera0.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+
+    this.camServer = CameraServer.getServer();
 
     Logging.init();
 
@@ -97,7 +103,7 @@ public class Robot extends TimedRobot {
   }
 
   private void setRobotFront() {
-    // this.camServer.setSource(this.camera0);
+    this.camServer.setSource(this.camera0);
   }
 
   /**
@@ -106,6 +112,9 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     // robotContainer.testDriveSubsystem.enableLogging(false);
+    robotContainer.indexerSubsystem.raiseIntake();
+    robotContainer.climberSubsystem.correctClimber();
+    robotContainer.driveSubsystem.setMotorIdleMode(IdleMode.kCoast);
   }
 
   @Override
@@ -145,6 +154,7 @@ public class Robot extends TimedRobot {
       autonomousCommand.cancel();
     }
     robotContainer.driveSubsystem.enableLogging(false);
+    robotContainer.indexerSubsystem.raiseIntake();
   }
 
   /**

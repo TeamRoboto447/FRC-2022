@@ -7,19 +7,24 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.controlmaps.OperatorMap;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 
 public class IntakeCommand extends CommandBase {
-  IndexerSubsystem indexerSubsystem;
+  final IndexerSubsystem indexerSubsystem;
+  final Timer intakeTimer;
+  boolean intaking;
   /**
    * Creates a new IntakeCommand.
    */
   public IntakeCommand(IndexerSubsystem iSubsystem) {
     this.indexerSubsystem = iSubsystem;
+    this.intakeTimer = new Timer();
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(this.indexerSubsystem);
   }
@@ -33,13 +38,13 @@ public class IntakeCommand extends CommandBase {
   @Override
   public void execute() {
 
-    if(RobotContainer.operator.getRawAxis(OperatorMap.lJoyY) < -0.5) {
-      this.indexerSubsystem.lowerIntake();
-    } else if(RobotContainer.operator.getRawAxis(OperatorMap.lJoyY) > 0.5) {
-      this.indexerSubsystem.raiseIntake();
-    }
+    // if(RobotContainer.operator.getRawAxis(OperatorMap.lJoyY) < -0.5) {
+    //   this.indexerSubsystem.lowerIntake();
+    // } else if(RobotContainer.operator.getRawAxis(OperatorMap.lJoyY) > 0.5) {
+    //   this.indexerSubsystem.raiseIntake();
+    // }
 
-    if(RobotContainer.operator.getRawButton(OperatorMap.X)) {
+    if(RobotContainer.driverLeft.getRawButton(1)) {
       intake();
     } else if(RobotContainer.operator.getRawButton(OperatorMap.RB)) {
       reverseIntake();
@@ -47,11 +52,11 @@ public class IntakeCommand extends CommandBase {
       stopIntake();
     }
 
-    if(!RobotContainer.operator.getRawButton(OperatorMap.X) && RobotContainer.operator.getRawButton(OperatorMap.LT)) {
+    if(!RobotContainer.operator.getRawButton(OperatorMap.X) && (RobotContainer.operator.getRawButton(OperatorMap.LT) || RobotContainer.operator.getRawButton(OperatorMap.B))) {
       feedShooter();
     } else if(RobotContainer.operator.getRawButton(OperatorMap.LB)) {
       reverseIndexer();
-    } else if(!RobotContainer.operator.getRawButton(OperatorMap.X)) {
+    } else if(!RobotContainer.driverLeft.getRawButton(1)) {
       stopIndexer();
     }
   }
@@ -83,7 +88,10 @@ public class IntakeCommand extends CommandBase {
   }
 
   private void stopIntake() {
+    this.indexerSubsystem.raiseIntake();
     this.indexerSubsystem.intakeRaw(0);
+    this.intakeTimer.reset();
+    this.intaking = false;
   }
 
   // private boolean shooterSpunUp = false;
@@ -99,12 +107,17 @@ public class IntakeCommand extends CommandBase {
   }
 
   private void intake() {
-    this.indexerSubsystem.intakeBall();
+    this.indexerSubsystem.lowerIntake();
+    if(!this.intaking) this.intakeTimer.start();
+    this.intaking = true;
+    if(this.intakeTimer.get() > 0.5) {
+      this.indexerSubsystem.intakeBall();
+    }
   }
 
 
   private void feedShooter() {
     // if(this.turretSubsystem.shooterAtSpeed()) this.shooterSpunUp = true;
-    this.indexerSubsystem.indexerRaw(-0.75);
+    this.indexerSubsystem.indexerRaw(0.60);
   }
 }

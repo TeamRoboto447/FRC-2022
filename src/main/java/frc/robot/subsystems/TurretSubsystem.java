@@ -11,7 +11,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.PowerDistribution;
 // import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.Logging;
@@ -202,6 +201,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public double getDistance() {
+    getDistanceVal();
     return this.distance;
   }
 
@@ -216,7 +216,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
     double measuredDist = this.distanceAverage.getAverage();
     double dist;
-
+    this.distanceLocked = false;
     if (this.distanceLocked) {
       if (!this.savedDistanceBool) {
         this.savedDistance = measuredDist;
@@ -311,8 +311,8 @@ public class TurretSubsystem extends SubsystemBase {
   // }
 
   boolean pastLimit = false;
-  private double lastTargetPos = 0;
-  private double lastValidTurretPos = 0;
+  // private double lastTargetPos = 0;
+  // private double lastValidTurretPos = 0;
   private boolean targettingEnabled = false;
 
   public void enableTargetting(boolean enable) {
@@ -393,7 +393,7 @@ public class TurretSubsystem extends SubsystemBase {
         }
 
         this.turnRaw(speed);
-        this.lastTargetPos = this.lastValidTurretPos = this.getTurretPos();
+        // this.lastTargetPos = this.lastValidTurretPos = this.getTurretPos();
       }
     } else {
       this.turnToAngle(this.storedTurretAngle);
@@ -436,7 +436,7 @@ public class TurretSubsystem extends SubsystemBase {
   private void setupMotorsAndEncoders() {
     // Set up Motors
     this.turretMotor = new CANSparkMax(Constants.turretSparkMax, MotorType.kBrushless);
-    this.turretMotor.setSmartCurrentLimit(Constants.neoSafeAmps);
+    this.turretMotor.setSmartCurrentLimit(Constants.miniNeoSafeAmps);
     this.turretMotor.setIdleMode(IdleMode.kCoast);
     this.turretMotor.set(0);
 
@@ -529,20 +529,26 @@ public class TurretSubsystem extends SubsystemBase {
   private void getValues() {
     if (!this.shotInProgress) {
 
-      this.validTarget = this.targettingCam.getLatestResult().hasTargets();
-      if (validTarget) {
-        this.photonTarget = this.targettingCam.getLatestResult().getBestTarget();
-        this.yaw = this.photonTarget.getYaw();
-        this.pitch = this.photonTarget.getPitch();
-        this.area = this.photonTarget.getArea();
-        this.skew = this.photonTarget.getSkew();
-        getDistanceVal();
-      } else {
-        this.photonTarget = null;
+      try {
+        this.validTarget = this.targettingCam.getLatestResult().hasTargets();
+        if (this.validTarget) {
+          this.photonTarget = this.targettingCam.getLatestResult().getBestTarget();
+          if (this.photonTarget != null) {
+            this.yaw = this.photonTarget.getYaw();
+            this.pitch = this.photonTarget.getPitch();
+            this.area = this.photonTarget.getArea();
+            this.skew = this.photonTarget.getSkew();
+          }
+          getDistanceVal();
+        } else {
+          this.photonTarget = null;
+        }
+      } catch (NullPointerException e) {
+
       }
     }
     this.shooterSetSpeed = this.shooterSpeedEntry.getDouble(Constants.shooterDefaultSpeed);
-    SmartDashboard.putNumber("Distance from Target (Meters)", this.distance);
+    this.pidTuningPVs.getEntry("distanceToTarget").setDouble(this.distance);
   }
 
   public void resetTurretEncoder() {
