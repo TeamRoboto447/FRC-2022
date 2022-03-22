@@ -60,6 +60,14 @@ public class TurretCommand extends CommandBase {
     } else if(RobotContainer.operator.getRawButton(OperatorMap.B)) {
       this.turretSubsystem.runShooterRaw(Constants.lowerHubSpeed);
       runFeeder();
+    } else if(RobotContainer.driverRight.getRawButton(8)) {
+      // TODO: Auto-shot from mid-bar
+      this.turretSubsystem.runShooterRaw(0);
+      this.turretSubsystem.stopFeeder();
+    } else if(RobotContainer.driverRight.getRawButton(9)) {
+      // TODO: Auto-shot from high-bar
+      this.turretSubsystem.runShooterRaw(0);
+      this.turretSubsystem.stopFeeder();
     } else {
       // this.turretSubsystem.enableShooterLogging(false);
       this.turretSubsystem.runShooterRaw(0);
@@ -76,13 +84,13 @@ public class TurretCommand extends CommandBase {
 
   }
 
-  private void lockDist() {
-    this.turretSubsystem.lockDistance();
-  }
+  // private void lockDist() {
+  //   this.turretSubsystem.lockDistance();
+  // }
 
-  private void unlockDist() {
-    this.turretSubsystem.unlockDistance();
-  }
+  // private void unlockDist() {
+  //   this.turretSubsystem.unlockDistance();
+  // }
 
   private void lockTurret() {
     this.turretSubsystem.lockTurret();

@@ -13,7 +13,6 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.controlmaps.OperatorMap;
 import frc.robot.subsystems.IndexerSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
 
 public class IntakeCommand extends CommandBase {
   final IndexerSubsystem indexerSubsystem;
@@ -56,6 +55,12 @@ public class IntakeCommand extends CommandBase {
       feedShooter();
     } else if(RobotContainer.operator.getRawButton(OperatorMap.LB)) {
       reverseIndexer();
+    } else if(RobotContainer.driverRight.getRawButton(8)) {
+      // TODO: Auto-shot from mid-bar
+      stopIndexer();
+    } else if(RobotContainer.driverRight.getRawButton(9)) {
+      // TODO: Auto-shot from high-bar
+      stopIndexer();
     } else if(!RobotContainer.driverLeft.getRawButton(1)) {
       stopIndexer();
     }

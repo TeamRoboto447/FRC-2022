@@ -11,13 +11,13 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IndexerSubsystem;
 
 public class IntakeBalls extends CommandBase {
-  private int ballCount = 0;
-  private boolean wasLookingAtBall = false;
+  // private int ballCount = 0;
+  // private boolean wasLookingAtBall = false;
   private final IndexerSubsystem indexerSubsystem;
-  private final int expectedBalls;
+  // private final int expectedBalls;
   public IntakeBalls(IndexerSubsystem iSubsystem, int expectedBalls) {
     this.indexerSubsystem = iSubsystem;
-    this.expectedBalls = expectedBalls;
+    // this.expectedBalls = expectedBalls;
     addRequirements(iSubsystem);
   }
 

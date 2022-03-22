@@ -8,7 +8,7 @@
 package frc.robot;
 
 import frc.robot.subsystems.*;
-import frc.robot.autocommands.AimAndDump;
+import frc.robot.autocommands.AimAndRev;
 import frc.robot.autocommands.AimAndShoot;
 import frc.robot.autocommands.TurretRotate;
 import frc.robot.autocommands.DriveToPosition;
@@ -18,8 +18,6 @@ import frc.robot.autocommands.LowerDump;
 import frc.robot.autocommands.RaiseIntake;
 import frc.robot.commands.*;
 // import frc.robot.autocommands.*;
-
-import com.ctre.phoenix.Util;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -91,7 +89,7 @@ public class RobotContainer {
       new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(65), 0.65, 1),
       new AimAndShoot(this.turretSubsystem, this.indexerSubsystem, this.driveSubsystem, scanLeft, 0.5, 5, 1));
 
-  SequentialCommandGroup twoBall = new SequentialCommandGroup(
+  SequentialCommandGroup twoUpper = new SequentialCommandGroup(
       new RaiseIntake(this.indexerSubsystem),
       new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(65), 0.65, 1),
       new AimAndShoot(this.turretSubsystem, this.indexerSubsystem, this.driveSubsystem, scanLeft, 0.5, 5, 1),
@@ -101,19 +99,27 @@ public class RobotContainer {
       new AimAndShoot(this.turretSubsystem, this.indexerSubsystem, this.driveSubsystem, scanLeft, 0.5, 5, 1));
 
   SequentialCommandGroup twoLower = new SequentialCommandGroup(
-    new ParallelRaceGroup(
+      new ParallelRaceGroup(
+          new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(95), 0.65, 1),
+          new IntakeBalls(this.indexerSubsystem, 1)),
+      new InvertDrive(this.driveSubsystem),
       new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(95), 0.65, 1),
-      new IntakeBalls(this.indexerSubsystem, 1)
-    ),
-    new InvertDrive(this.driveSubsystem),
-    new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(95), 0.65, 1),
-    new TurretRotate(this.turretSubsystem, 0, 5),
-    new LowerDump(this.turretSubsystem, this.indexerSubsystem)
-  );
+      new TurretRotate(this.turretSubsystem, 0, 5),
+      new LowerDump(this.turretSubsystem, this.indexerSubsystem));
+
+  SequentialCommandGroup twoUpperExperiment = new SequentialCommandGroup(
+      new RaiseIntake(this.indexerSubsystem),
+      new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(65), 0.65, 1),
+      new AimAndShoot(this.turretSubsystem, this.indexerSubsystem, this.driveSubsystem, scanLeft, 0.5, 5, 1),
+      new ParallelRaceGroup(
+          new DriveToPosition(this.driveSubsystem, "low", Utilities.inchToEncoder(30), 0.5, 1),
+          new IntakeBalls(this.indexerSubsystem, 1),
+          new AimAndRev(this.turretSubsystem, scanLeft, 1)),
+      new AimAndShoot(this.turretSubsystem, this.indexerSubsystem, this.driveSubsystem, scanLeft, 0.5, 5, 1));
 
   private void addAutonomousCommands() {
     this.autonomousSelector.addOption("1 Ball Upper", this.singleBall);
-    this.autonomousSelector.setDefaultOption("2 Ball Upper", this.twoBall);
+    this.autonomousSelector.setDefaultOption("2 Ball Upper", this.twoUpper);
     this.autonomousSelector.addOption("2 Ball Lower", this.twoLower);
     // this.autonomousSelector.addOption("Three Ball Auto (Manual Target)",
     // this.threeBallAutoManualAim);
